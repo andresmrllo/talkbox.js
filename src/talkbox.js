@@ -1,6 +1,7 @@
 var connect = require('connect'),
+	serveStatic = require('serve-static'),
 	http = require('http'),
-	app = http.createServer(connect().use(connect.static(
+	app = http.createServer(connect().use(serveStatic(
 		__dirname+'/../static',
 		{redirect: true, maxAge: 1000}))),
 	socketio = require('socket.io'),
@@ -33,4 +34,3 @@ sh.context.make = clientHandler.make;
 //var xmppClient = new XMPP(clientHandler,settings);
 
 //sh.context.xmppClient = xmppClient;
-

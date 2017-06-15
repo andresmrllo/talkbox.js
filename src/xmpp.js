@@ -16,7 +16,7 @@ function XMPP(clientHandler, settings) {
 		lib.connect(this.settings);
 		var friends = this.settings.friends;
 		if(friends) {
-			for(k in friends) {
+			for(var k in friends) {
 				if(friends.hasOwnProperty(k) && friends[k].alias) {
 					console.log('xmpp: xmpp adding '+friends[k].alias+' <'+k+'>');
 					lib.subscribe(k);
@@ -50,10 +50,8 @@ XMPP.prototype.handleError = function(err) {
 
 XMPP.prototype.handleSubscribe = function(from) {
 	console.log('xmpp: auth from',from);
-	if (this.settings.friends
-	&& this.settings.friends.hasOwnProperty(from)
-	&& this.settings.friends[from].alias) {
-		console.log('xmpp:',this.settings.friends[from].alias,'is my friend.')
+	if (this.settings.friends && this.settings.friends.hasOwnProperty(from) && this.settings.friends[from].alias) {
+		console.log('xmpp:',this.settings.friends[from].alias,'is my friend.');
 		lib.acceptSubscription(from);
 	}
 };
@@ -91,7 +89,7 @@ function XMPPClient(jid, alias) {
 	this.jid = jid;
 	this.uid = base64id.generateId();
 	this.color = color.genColor();
-	
+
 	this.send = this.send.bind(this);
 }
 
@@ -99,7 +97,7 @@ XMPPClient.prototype.send = function(message) {
 	var msgFrom = message.name;
 	var msgText = message.text;
 	var type = message.type;
-	
+
 	if(type ==='msg') {
 		// nothing to do
 		if(message.uid === this.uid) {
@@ -115,4 +113,3 @@ XMPPClient.prototype.send = function(message) {
 };
 
 module.exports = XMPP;
-

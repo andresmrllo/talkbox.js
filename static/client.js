@@ -40,8 +40,10 @@ function initClient() {
 	if (notificationsSupported) {
 		var perm = Notification.permission;
 		if(!perm) {
-			var notif = new Notification("testing")
-			notif.onshow = function(){this.close()};
+			var notif = new Notification("testing");
+			notif.onshow = function(){
+				this.close();
+			};
 			perm = notif.permission;
 		}
 		checkNotificationPerm(perm);
@@ -82,7 +84,7 @@ function checkNotificationPerm(perm) {
 		});
 		notifs.fadeIn(300);
 		$('#overlaymessage').fadeIn(300);
-		
+
 	} else if(perm === 'granted') {
 		//yay
 		notificationsEnabled = true;
@@ -114,7 +116,7 @@ function onMsg(data) {
 			alertInfo.users = unreadusers;
 			alertInfo.oldTitle = "talkbox";//TODO: move to settings
 			stopAlert && stopAlert();
-			document.title = "talkbox";	
+			document.title = "talkbox";
 			stopAlert = AlertUnread(alertInfo);
 		}
 	}
@@ -130,7 +132,7 @@ function onRen(data) {
 	$('#userlist .inner #'+data.uid).fadeOut(200, function() {
 		$(this).text(data.name).fadeIn(100);
 	});
-	
+
 	var user = findByUid(userlist, data.uid);
 	if(user) {
 		var index = 0;
@@ -141,7 +143,7 @@ function onRen(data) {
 	} else {
 		//TODO what now?
 	}
-};
+}
 
 function onUserList(data) {
 	console.log('userlist',data);
@@ -163,7 +165,7 @@ function onUserLeave(user) {
 	} else {
 		console.info('got userleave:',user,', but not found in list',userlist);
 	}
-	setUserlist(userlist)
+	setUserlist(userlist);
 }
 
 function onUserJoin(data) {
@@ -215,14 +217,7 @@ function onConnectFailed() {
 function addMessage(instant, data) {
 	var date = new Date(data.date);
 	var user = findByUid(userlist, data.uid);
-	var d = $('<div class="message'
-		+ '" style="opacity: 0;">'
-		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
-		+ '<span class="name'+(data.server?' server' : '') + '" '
-		+ (user && user.color?'style="color:'+user.color+'"' : '') +'>'
-		+ data.name + ':</span>'
-		+ '<span class="text">' + marked(data.text) + '</span>'
-		+ '</div>')
+	var d = $('<div class="message' + '" style="opacity: 0;">' + '<span class="right">' + date.toLocaleTimeString() + '</span>' + '<span class="name'+(data.server?' server' : '') + '" ' + (user && user.color?'style="color:'+user.color+'"' : '') +'>' + data.name + ':</span>' + '<span class="text">' + marked(data.text) + '</span>' + '</div>')
 		.appendTo('#msgs #inner')
 		.animate({
 			opacity: 1
@@ -230,10 +225,10 @@ function addMessage(instant, data) {
 	d.find('a')
 		.oembed() // oEmbed handles youtube etc
 		.filter(function(el){ // filter all remaining images
-			return this.href.match(/\.(jpe?g|png|gif|svg)$/i)
+			return this.href.match(/\.(jpe?g|png|gif|svg)$/i);
 		})
 		.each(function() { //put an image in
-			$(this).html('<img src="' + this.href + '" />'); 
+			$(this).html('<img src="' + this.href + '" />');
 		});
 	if(instant) {
 		$('#msgs').scrollTop($('#msgs #inner').height());
@@ -246,7 +241,7 @@ function addMessage(instant, data) {
 		notify(data);
 	}
 	return d;
-};
+}
 
 function notify(data) {
 	//TODO use alternatives when not supported
@@ -257,7 +252,7 @@ function notify(data) {
 	console.log("focused:");
 	if(!notificationsEnabled) return;
 	if(!notificationsSupported) return;
-	
+
 	var notif = new Notification(
 		data.name, {
 			body: data.text,
@@ -288,7 +283,7 @@ function setUserlist(data) {
 			});
 		}
 	});
-	for(i in userlist) {
+	for(var i in userlist) {
 		if ($('#userlist .inner #'+userlist[i].uid.replace(/[:\.@]/g,'__'))
 			.length===0) {
 			makeUserEl(userlist[i])
@@ -298,12 +293,10 @@ function setUserlist(data) {
 			}, 200);
 		}
 	}
-};
+}
 
 function makeUserEl(user) {
-	return $('<span class="user" id="' + user.uid.replace(/[:\.@]/g,'__')
-		+ '" style="opacity: 0; color:'+user.color+';">'
-		+ user.name + '</span>');
+	return $('<span class="user" id="' + user.uid.replace(/[:\.@]/g,'__') + '" style="opacity: 0; color:'+user.color+';">' + user.name + '</span>');
 }
 
 function overlayMsg(message) {
@@ -317,7 +310,7 @@ function closeOverlay (subElement){
 	if($('#overlaymessage').find(':visible').size() <= 1){
 		$('#overlaymessage').fadeOut(300);
 	}
-	
+
 	//fadeOut other stuff
 	if(subElement) {
 		$('#overlaymessage').find(subElement).fadeOut(300,closeOverlay);
@@ -345,13 +338,10 @@ $(document).ready(function() {
 	connect();
 	$('#inputbox').keydown(function(event) {
 		//console.log('shift: '+event.shiftKey+' ctrl: '+event.ctrlKey+' which: '+event.which);
-		if(event.keyCode === 13
-			&& !(event.ctrlKey || event.shiftKey)) {
+		if(event.keyCode === 13 && !(event.ctrlKey || event.shiftKey)) {
 			send();
 			return false;
-		} else if((event.ctrlKey || event.shiftKey)
-			&& (event.keyCode === 13
-			|| event.keyCode == 10) ) {
+		} else if((event.ctrlKey || event.shiftKey) && (event.keyCode === 13 || event.keyCode == 10) ) {
 			if(!event.shiftKey)
 				$('#inputbox').insertAtCaret('\n');
 		}

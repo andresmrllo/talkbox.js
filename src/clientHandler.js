@@ -13,7 +13,7 @@ function ClientHandler(settings) {
 	this.clients = [];
 	this.auths = [];
 	this.make = new Make(this.clients);
-};
+}
 
 ClientHandler.prototype.receive = function(client, text) {
 	if(typeof text === 'object' && typeof text.text === 'string') {
@@ -22,7 +22,7 @@ ClientHandler.prototype.receive = function(client, text) {
 		this.send(client, this.make.serverMsg('msg','Invalid message.'));
 		return;
 	}
-	
+
 	text = text.trim();
 	// command evaluation
 	if(text[0] === '/') {
@@ -33,14 +33,14 @@ ClientHandler.prototype.receive = function(client, text) {
 			return;
 		}
 		//TODO insert more commands here
-		this.make.serverMsg('msg','Invalid command.')
+		this.make.serverMsg('msg','Invalid command.');
 		return;
 	}
-	
+
 	// empty markup
 	if(!marked(text))
 		return false;
-	
+
 	var msg = {
 		type: 'msg',
 		uid: client.uid,
@@ -49,35 +49,35 @@ ClientHandler.prototype.receive = function(client, text) {
 		date: new Date(),
 	};
 	this.sendAll(msg);
-}
+};
 
 ClientHandler.prototype.send = function(client,msg) {
 	client.send(msg);
-}
+};
 
 ClientHandler.prototype.sendAll = function(msg) {
-	for(i in this.clients) {
+	for(var i in this.clients) {
 		this.send(this.clients[i],msg);
 	}
-}
+};
 
 ClientHandler.prototype.disconnect = function(client) {
 	console.info('disconn: ', client.name, client.uid);
-	var i = this.clients.indexOf(client)
+	var i = this.clients.indexOf(client);
 	if(i != -1) {
-		this.clients.splice(i,1)
+		this.clients.splice(i,1);
 		this.sendAll({
 			type: 'userleave',
 			uid: client.uid,
 			name: client.name
 		});
 	} // else: he was not logged in.
-}
+};
 
 ClientHandler.prototype.sendUserlist = function(client) {
 	var func = client ? this.send.bind(this,client) : this.sendAll;
 	func(this.make.userlist());
-}
+};
 
 ClientHandler.prototype.auth = function(client, uid, secret, name) {
 	client.name = name;
@@ -89,8 +89,7 @@ ClientHandler.prototype.auth = function(client, uid, secret, name) {
 	if(!auth || auth.secret !== secret) {
 		// user secret is invalid!!!
 		//TODO note this in the database
-		console.info('auth '+secret.substring(0,7)
-			+ '.. for user '+name+' not found / invalid');
+		console.info('auth '+secret.substring(0,7) + '.. for user '+name+' not found / invalid');
 		this.newAuth(client);
 		return;
 	}
@@ -100,7 +99,7 @@ ClientHandler.prototype.auth = function(client, uid, secret, name) {
 		client.name = auth.name;
 	}
 	this.welcome(client);
-}
+};
 
 ClientHandler.prototype.newAuth = function(client) {
 	var uid;
@@ -128,8 +127,7 @@ ClientHandler.prototype.rename = function(client, nextName) {
 		return;
 	}
 	if(newName === null) {
-		this.send(client,this.make.serverMsg('msg','Invalid nickname format, allowed symbols: '
-			+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen));
+		this.send(client,this.make.serverMsg('msg','Invalid nickname format, allowed symbols: ' + '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen));
 		return;
 	}
 	var old = client.name;
@@ -170,19 +168,18 @@ ClientHandler.prototype.welcome = function(client) {
 	if(!client.name) client.name = "unnamed_"+(Math.floor(Math.random()*10000));
 	client.uid = client.auth.uid;
 	client.auth.login = new Date();
-	
+
 	this.addUser(client);
-	
+
 	var welcome = this.make.userToSend(client);
 	welcome.secret = client.auth.secret;
 	welcome.uid = client.uid;
 	welcome.type = 'welcome';
 	this.send(client,welcome);
-	
+
 	this.send(client, this.make.serverMsg('msg',
-		'welcome, ' + client.name + '! To change your nick, use'
-		+ ' /nick thisIsANewNickname'));
-	
+		'welcome, ' + client.name + '! To change your nick, use' + ' /nick thisIsANewNickname'));
+
 	this.sendUserlist(client);
 };
 
@@ -190,18 +187,18 @@ ClientHandler.prototype.addUser = function(client) {
 	var join = this.make.userToSend(client);
 	join.type = 'userjoin';
 	this.sendAll(join);
-	
+
 	this.clients.push(client);
 	console.info('join:', client.name, client.uid);
 };
 
 ClientHandler.prototype.getUserByName = function(name) {
-	for(i in this.clients) {
+	for(var i in this.clients) {
 		if(this.clients[i].name === name)
 			return this.clients[i];
 	}
 	return null;
-}
+};
 
 ClientHandler.prototype.reloadAll = function() {
 	this.sendAll({type: 'reload'});

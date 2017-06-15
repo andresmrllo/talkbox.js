@@ -1,7 +1,7 @@
 {
 	"name": "talkbox",
 	"description": "A minimalistic webchat with xmpp-connect",
-	"version": "0.2.2-alpha",
+	"version": "1.0.3-alpha",
 	"keywords": [
 		"talkbox",
 		"talkbox.js",
@@ -61,4 +61,3 @@
 	},
 	"scripts": {"start": "node src/talkbox.js"}
 }
-

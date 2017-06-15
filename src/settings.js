@@ -5,7 +5,7 @@ var defaults = JSON.parse(deftext);
 
 deepClone = function(object) {
 	return JSON.parse(JSON.stringify(object));
-}
+};
 
 deepAddAll = function(object, other){
 	var changed = 0;
@@ -25,7 +25,7 @@ deepAddAll = function(object, other){
 		}
 	}
 	return changed;
-}
+};
 
 var read;
 var err;
@@ -54,4 +54,3 @@ if(!err) {
 }
 
 module.exports = settings;
-
